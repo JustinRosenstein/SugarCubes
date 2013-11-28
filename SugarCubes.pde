@@ -24,15 +24,17 @@
  */ 
 
 LXPattern[] patterns(GLucose glucose) {
-  return new LXPattern[] {
-     
-     
+  return new LXPattern[] {        
 
+    new SineSphere(glucose),
+    //new CubeCurl(glucose), 
+     
     // Slee
-    new Swarm(glucose),
-    //new Cathedrals(glucose),
+    // new Cathedrals(glucose),
+     new Swarm(glucose),
     new MidiMusic(glucose),
     new Pulley(glucose),
+    
     new ViolinWave(glucose),
     new BouncyBalls(glucose),
     new SpaceTime(glucose),
@@ -41,11 +43,16 @@ LXPattern[] patterns(GLucose glucose) {
     new Blinders(glucose),
     new CrossSections(glucose),
     new Psychedelia(glucose),
+
+    new MultipleCubes(glucose),
     
     new Traktor(glucose).setEligible(false),
     new BassPod(glucose).setEligible(false),
     new CubeEQ(glucose).setEligible(false),
     new PianoKeyPattern(glucose).setEligible(false),
+
+	// AntonK
+	new AKPong(glucose),
 
     // DanH
     new Noise(glucose),
@@ -58,11 +65,27 @@ LXPattern[] patterns(GLucose glucose) {
      //new CubeCurl(glucose), 
      
      // Tim
+    new TimMetronome(glucose),
     new TimPlanes(glucose),
     new TimPinwheels(glucose),
     new TimRaindrops(glucose),
     new TimCubes(glucose),
+    // new TimTrace(glucose),
+    new TimSpheres(glucose),
 
+    // Jackie
+    new JackieSquares(glucose),
+    new JackieLines(glucose),
+    new JackieDots(glucose),
+
+    // L8on
+    new L8onAutomata(glucose),
+    new L8onLife(glucose),
+    new L8onStripLife(glucose),
+
+    // Vincent
+    new VSTowers(glucose),
+    
     // Toby
     new GlitchPlasma(glucose),
     new FireEffect(glucose).setEligible(false),
@@ -78,17 +101,18 @@ LXPattern[] patterns(GLucose glucose) {
     // Jack
     new Swim(glucose),
     new Balance(glucose),
+    
 
    
     
-    // new TimTrace(glucose),
-    new TimSpheres(glucose),
-
     // Ben
     // new Sandbox(glucose),
     new TowerParams(glucose),
     new DriveableCrossSections(glucose),
     new GranimTestPattern2(glucose),
+    
+    // Shaheen
+    //new HelixPattern(glucose).setEligible(false),
     
     //JR
     //new Gimbal(glucose),

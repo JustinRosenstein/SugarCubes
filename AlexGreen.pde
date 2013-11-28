@@ -1,19 +1,26 @@
 class SineSphere extends SCPattern {
-  private SawLFO yrot = new SawLFO(0, TWO_PI, 3000);
-  private SawLFO yrot2 = new SawLFO(0, -TWO_PI,  8000);
-  public BasicParameter huespread = new BasicParameter("Hue", 0, 180);
-  public BasicParameter widthparameter= new BasicParameter("Width", .2);
+  float modelrad = sqrt((model.xMax)*(model.xMax) + (model.yMax)*(model.yMax) + (model.zMax)*(model.zMax));
+  private BasicParameter yrotspeed = new BasicParameter("yspeed", 3000, 1, 10000);
+  private BasicParameter yrot2speed = new BasicParameter("y2speed", 4000, 1, 15000);
+  private BasicParameter yrot3speed = new BasicParameter("y3speed", 1400, 1, 15000);
+  private BasicParameter vibrationrate = new BasicParameter("vib", 3000, 1, 10000);
+  private SawLFO yrot = new SawLFO(0, TWO_PI, yrotspeed);
+  private SawLFO yrot2 = new SawLFO(0, -TWO_PI, yrot2speed);
+  private SawLFO yrot3 = new SawLFO(0, -TWO_PI, yrot3speed);
+  public BasicParameter huespread = new BasicParameter("Hue", 0, 360);
+  public BasicParameter widthparameter= new BasicParameter("Width", 20, 1, 60);
+  public BasicParameter vibration_magnitude = new BasicParameter("Vmag", 20, 2, modelrad/2);
+  public BasicParameter scale = new BasicParameter("Scale", 1, .1, 5);
   private int pitch = 0; 
   private int channel = 0; 
   private int velocity = 0; 
   private int cur = 0; 
   public final LXProjection sinespin; 
   public final LXProjection sinespin2;
- float modelrad = sqrt((model.xMax)*(model.xMax) + (model.yMax)*(model.yMax) + (model.zMax)*(model.zMax));
+  public final LXProjection sinespin3;
+ 
   Pick Sshape; 
 
-  //to-do:  how to sync all hues across sphery's via one basicparameter 
-  //public BasicParameter huespread = new BasicParameter("HueSpread", 180, 360);
   public BasicParameter rotationx = new BasicParameter("rotx", 0, 0, 1 );
   public BasicParameter rotationy = new BasicParameter("roty", 1, 0, 1);
   public BasicParameter rotationz = new BasicParameter("rotz", 0, 0, 1);
@@ -23,12 +30,12 @@ class SineSphere extends SCPattern {
   class Sphery {
   float f1xcenter, f1ycenter, f1zcenter, f2xcenter , f2ycenter, f2zcenter; //second three are for an ellipse with two foci
   private  SinLFO vibration; 
-  private  SinLFO surface;
-  private  SinLFO vx;
+  private  SinLFO surfacewave;
+
   private SinLFO xbounce;
   public SinLFO ybounce;
   private SinLFO zbounce;
-  float vibration_min, vibration_max, vperiod;
+  float vibration_magnitude, vperiod; //vibration_min; vibration_max;
   
   //public BasicParameter huespread;
   public BasicParameter bouncerate;
@@ -36,28 +43,40 @@ class SineSphere extends SCPattern {
   public BasicParameter vibrationrate;
   public final PVector circlecenter = new PVector(); 
  
-  public Sphery(float f1xcenter, float f1ycenter, float f1zcenter, float vibration_min, float vibration_max, float vperiod) 
+  public Sphery(float f1xcenter, float f1ycenter, float f1zcenter, float vibration_magnitude , float vperiod) 
   {
    this.f1xcenter = f1xcenter;
    this.f1ycenter = f1ycenter;
    this.f1zcenter = f1zcenter;
-   this.vibration_min = vibration_min;
-   this.vibration_max = vibration_max;
+
+
+   this.vibration_magnitude = vibration_magnitude;
+   
    this.vperiod = vperiod;
    //addParameter(bounceamp = new BasicParameter("Amp", .5));
    //addParameter(bouncerate = new BasicParameter("Rate", .5));  //ybounce.modulateDurationBy(bouncerate);
    //addParameter(vibrationrate = new BasicParameter("vibration", 1000, 10000));
     //addParameter(widthparameter = new BasicParameter("Width", .2));
-    
-   
-   addModulator( vx = new SinLFO(500, 10000, 100000)).trigger() ;
-   //addModulator(xbounce = new SinLFO(model.xMax/3, 2*model.yMax/3, 2000)).trigger(); 
+     //addModulator(xbounce = new SinLFO(model.xMax/3, 2*model.yMax/3, 2000)).trigger(); 
    addModulator(ybounce= new SinLFO(model.yMax/3, 2*model.yMax/3, 240000)).trigger(); //bounce.modulateDurationBy
     
    //addModulator(bounceamp); //ybounce.setMagnitude(bouncerate);
-   addModulator( vibration = new SinLFO(vibration_min , vibration_max, 10000)).trigger(); //vibration.setPeriod(240000/lx.tempo.bpm());
+   addModulator( vibration = new SinLFO( modelrad/15 - vibration_magnitude , modelrad/15 + vibration_magnitude, vperiod)).trigger(); //vibration.setPeriod(240000/lx.tempo.bpm());
+
       
   }
+
+  //  public Sphery(float f1xcenter, float f1ycenter, float f1zcenter, float vibration_magnitude, float vperiod) 
+  // {
+  //  this.f1xcenter = f1xcenter;
+  //  this.f1ycenter = f1ycenter;
+  //  this.f1zcenter = f1zcenter;
+  //  this.vibration_magnitude = vibration_magnitude;
+  // this.vperiod = vperiod;
+  //  addModulator(ybounce= new SinLFO(model.yMax/3, 2*model.yMax/3, 240000)).trigger(); //bounce.modulateDurationBy
+  //   addModulator( vibration = new SinLFO( modelrad/10 - vibration_magnitude , modelrad/10 + vibration_magnitude, vperiod)).trigger(); //vibration.setPeriod(240000/lx.tempo.bpm());
+      
+  // }
 
   //for an ellipse
 //  public Sphery(float f1xcenter, float f1ycenter, float f1zcenter, float f2xcenter, float f2ycenter, float f2zcenter, 
@@ -81,12 +100,17 @@ class SineSphere extends SCPattern {
   
 // }
  
-
+public int     c1c    (float a)              { return round(100*constrain(a,0,1));               }
 
 void setVibrationPeriod(double period){
 // to-do:  make this conditional upon time signature
 
-vibration.setPeriod(period);
+this.vibration.setPeriod(period);
+}
+
+void setVibrationMagnitude(double mag){
+//to-do: make this optionally conditional upon decibel volume, frequency spectrum)
+this.vibration.setRange(-mag,mag);
 
 }
 
@@ -101,18 +125,25 @@ float distfromcirclecenter(float px, float py, float pz, float f1x, float f1y, f
    float qtheta = atan2(  (q.x-f1xcenter) , (q.z - f1zcenter) ); 
 
 
-    return map(qtheta, -PI/2, PI/2, 160-huespread.getValuef(), 240 +huespread.getValuef());
+    return map(qtheta, -PI/2, PI/2, 180-huespread.getValuef(), 220+huespread.getValuef());
   //if (q.x > f1xcenter ) {return 140 ;}
     //else  {return 250;}  
  }
- color spheryvalue (PVector p, float f1xcenter, float f1ycenter, float f1zcenter) {
-   circlecenter.set(f1xcenter, f1ycenter, f1zcenter); 
+
+ // float noisesat(PVector q) {
+   
+
+ //  return noise()
+
+ // }
+ color spheryvalue (PVector p) {
+   circlecenter.set(this.f1xcenter, this.f1ycenter, this.f1zcenter); 
 
   
 //switch(sShpape.cur() ) {}  
 
-   float b = max(0, 100 - 100*widthparameter.getValuef()*abs(p.dist(circlecenter)
-      - vibration.getValuef() ) );
+   float b = max(0, 100 - widthparameter.getValuef()*abs(p.dist(circlecenter)
+      - vibration.getValuef()) );
 
    if (b <= 0) {
      return 0;
@@ -120,8 +151,9 @@ float distfromcirclecenter(float px, float py, float pz, float f1x, float f1y, f
 
    return lx.hsb(
      constrain(quadrant(p), 0, 360),
-     80,
-     b
+     // constrain(100*noise(quadrant(p)), 0, 100),
+     100,
+      b
    ); 
  }
  color ellipsevalue(float px, float py, float pz , float f1xc, float f1yc, float f1zc, float f2xc, float f2yc, float f2zc)
@@ -169,25 +201,46 @@ final Sphery[] spherys;
   SineSphere(GLucose glucose) 
   {
     super(glucose);
+    println("modelrad  " + modelrad);   
     sinespin = new LXProjection(model);
     sinespin2 = new LXProjection(model);
+    sinespin3= new LXProjection(model);
     addParameter(huespread);
+    addParameter(vibrationrate);
+    addParameter(widthparameter);
     addParameter(rotationx);
     addParameter(rotationy);
     addParameter(rotationz);
+    addParameter(yrotspeed);
+    addParameter(yrot2speed);
+    addParameter(yrot3speed);
+    addParameter(vibration_magnitude);
+    addParameter(scale);
     addModulator(yrot).trigger();
     addModulator(yrot2).trigger(); 
+    addModulator(yrot3).trigger();
+
     
     //addParameter(huespread);
     //Sshape = addPick("Shape", , 1);
     spherys = new Sphery[] {
-      new Sphery(model.xMax/4, model.yMax/2, model.zMax/2, modelrad/16, modelrad/8, 3000),
-      new Sphery(.75*model.xMax, model.yMax/2, model.zMax/2, modelrad/20, modelrad/10, 2000),
-      new Sphery(model.xMax/2, model.yMax/2, model.zMax/2,  modelrad/4, modelrad/8, 2300),
+    new Sphery(model.xMax/4, model.yMax/2, model.zMax/2, modelrad/8, 3000),
+    new Sphery(.75*model.xMax, model.yMax/2, model.zMax/2, modelrad/10, 2000),
+    new Sphery(model.xMax/2, model.yMax/2, model.zMax/2,  modelrad/5, 2300),
+    new Sphery(.7*model.xMax, .65*model.yMax, .5*model.zMax, modelrad/7, 3500),
+    new Sphery(.75*model.xMax, .8*model.yMax, .7*model.zMax, modelrad/10, 2000),
+    new Sphery(model.xMax/2, model.yMax/2, model.zMax/2,  modelrad/4, 2300),
+            
 
-      new Sphery(.3*model.xMax, .4*model.yMax, .6*model.zMax, modelrad/16, modelrad/8, 4000),
-      new Sphery(.75*model.xMax, model.yMax/2, model.zMax/2, modelrad/20, modelrad/10, 2000),
-      new Sphery(model.xMax/2, model.yMax/2, model.zMax/2,  modelrad/4, modelrad/8, 2300),
+
+
+      // new Sphery(model.xMax/4, model.yMax/2, model.zMax/2, modelrad/16, modelrad/8, 3000),
+      // new Sphery(.75*model.xMax, model.yMax/2, model.zMax/2, modelrad/20, modelrad/10, 2000),
+      // new Sphery(model.xMax/2, model.yMax/2, model.zMax/2,  modelrad/4, modelrad/8, 2300),
+
+      // new Sphery(.7*model.xMax, .65*model.yMax, .5*model.zMax, modelrad/14, modelrad/7, 3500),
+      // new Sphery(.75*model.xMax, .8*model.yMax, .7*model.zMax, modelrad/20, modelrad/10, 2000),
+      // new Sphery(model.xMax/2, model.yMax/2, model.zMax/2,  modelrad/4, modelrad/8, 2300),
       
     };  
   }
@@ -213,39 +266,37 @@ final Sphery[] spherys;
 //   }
 
     public void run( double deltaMs) {
-     double t = lx.tempo.ramp();
-     double bpm = lx.tempo.bpm();
+     float  t = lx.tempo.rampf();
+     float bpm = lx.tempo.bpmf();
+     float scalevalue = scale.getValuef();
+   
      
-     sinespin.reset()
-     .center() 
-     // .scale(1.3,1.3,1.3)
-      // Rotate around the origin (now the center of the car) about an y-vector
-      .rotate(yrot.getValuef(), rotationx.getValuef(), rotationy.getValuef() , rotationz.getValuef())
-      .translate(model.cx, model.cy, model.cz);
-     
-     switch (cur) {
+     // switch (cur) {
 
-     case 1: t = .5*t;   bpm = .5*bpm;  break;
+     // case 1: t = map(.5*t ,0,.5, 0,1);   bpm = .5*bpm;  break;
 
-     case 2: t = t;   bpm = bpm;   break;
+     // case 2: t = t;   bpm = bpm;   break;
 
-     case 3: t = 2*t;  bpm = 2*bpm; break;
+     // case 3: t = map(2*t,0,2,0,1);  bpm = 2*bpm; break;
 
-     default: t= t;   bpm = bpm; 
-     }
+     // default: t= t;   bpm = bpm; 
+     // }
+
+     //switch(sphery.colorscheme)
         
       for ( Sphery s: spherys){
-     
-      s.setVibrationPeriod(480000/bpm);
-      s.vibration.setBasis(t);
+      
+      //s.vibration.setBasis(t);
+      s.setVibrationPeriod(vibrationrate.getValuef());
+    //  s.setVibrationMagnitude(vibration_magnitude.getValuef());
      
        }
-     sinespin.reset()
-     
-    
-     // Translate so the center of the car is the origin, offset 
+      
+
+      sinespin.reset()
+      // Translate so the center of the car is the origin, offset 
       .center()
-     // .scale(1.3,1.3,1.3)
+       .scale(scalevalue, scalevalue, scalevalue)
       // Rotate around the origin (now the center of the car) about an y-vector
       .rotate(yrot.getValuef(), rotationx.getValuef(), rotationy.getValuef() , rotationz.getValuef())
       .translate(model.cx, model.cy, model.cz);
@@ -255,14 +306,14 @@ final Sphery[] spherys;
    
 
      for (LXVector p: sinespin)
-   // for (Point p: model.points)
+     // for (Point p: model.points)
      {
        P.set(p.x, p.y, p.z);
       // PVector P = new PVector(p.x, p.y, p.z);
     color c = #000000;
-    c = blendIfColor(c, spherys[1].spheryvalue(P, .75*model.xMax, model.yMax/2, model.zMax/2), ADD);
-    c = blendIfColor(c, spherys[0].spheryvalue(P, model.xMax/4, model.yMax/4, model.zMax/2), ADD);
-    c = blendIfColor(c, spherys[2].spheryvalue(P, model.xMax/2, model.yMax/2, model.zMax/2),ADD);
+    c = blendIfColor(c, spherys[1].spheryvalue(P), ADD);
+    c = blendIfColor(c, spherys[0].spheryvalue(P), ADD);
+    c = blendIfColor(c, spherys[2].spheryvalue(P),ADD);
     
 
     colors[p.index] = c;
@@ -271,18 +322,35 @@ final Sphery[] spherys;
                }
    sinespin2.reset()
    .center()
-   .rotate(yrot.getValuef(), rotationx.getValuef(), rotationy.getValuef() , rotationz.getValuef())
+   .scale(scalevalue,scalevalue,scalevalue)
+   .rotate(yrot2.getValuef(), rotationx.getValuef(), rotationy.getValuef() , rotationz.getValuef())
    .translate(model.cx,model.cy,model.cz);
 
     for (LXVector p: sinespin2)
     {   color c = 0;
       // PVector P = new PVector(p.x, p.y, p.z);
         P.set(p.x, p.y, p.z);
-        c = blendIfColor(c, spherys[3].spheryvalue(P, .3*model.xMax, .7*model.yMax, .6*model.zMax),ADD);
+        c = blendIfColor(c, spherys[3].spheryvalue(P),ADD);
          
         colors[p.index] = blendIfColor(colors[p.index], c , ADD);
 
     }  
+    sinespin3.reset()
+    .center()
+    .scale(scalevalue,scalevalue,scalevalue)
+    .rotate(yrot3.getValuef(),-1 + rotationx.getValuef(), rotationy.getValuef(), rotationz.getValuef())
+    .translate(model.cx, model.cy, model.cz);
+   for (LXVector p: sinespin3)
+    {   color c = 0;
+      // PVector P = new PVector(p.x, p.y, p.z);
+        P.set(p.x, p.y, p.z);
+        c = blendIfColor(c, spherys[4].spheryvalue(P),ADD);
+         
+        colors[p.index] = blendIfColor(colors[p.index], c , ADD);
+
+    }
+
+
 
   }
   
@@ -339,16 +407,6 @@ for (int i = 0; i < model.cubes.size(); i++){
 //there is definitely a better way of doing this!
 PVector centerofcube(int i) { 
 Cube c = model.cubes.get(i);
-
-//println(" cube #:  " + i + " c.x  "  +  c.x  + "  c.y   "  + c.y   + "  c.z  "  +   c.z  );
-// PVector cubeangle = new PVector(c.rx, c.ry, c.rz);
-//println("raw x angle:  " + c.rx + "raw y angle:  " + c.ry + "raw z angle:  " + c.rz);
-//PVector cubecenter = new PVector(c.x + CW/2, c.y + CH/2, c.z + CW/2);
-//println("cubecenter unrotated:  "  + cubecenter.x + "  "  +cubecenter.y + "  " +cubecenter.z );
-//PVector centerrot = new PVector(cos(c.rx)*CW/2 - sin(c.rx)*CW/2, cubecenter.y, cos(c.rz)*CW/2 + sin(c.rz)*CW/2);
- // nCos*(y-o.y) - nSin*(z-o.z) + o.y
-//cubecenter = PVector.add(new PVector(c.x, c.y, c.z), centerrot);
-//println( "  cubecenter.x  " + cubecenter.x  + " cubecenter.y  " +  cubecenter.y + " cubecenter.z  "   +  cubecenter.z  + "   ");
 PVector cubecenter = new PVector(c.cx, c.cy, c.cz);
 
 return cubecenter;

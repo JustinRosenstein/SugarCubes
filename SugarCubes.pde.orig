@@ -24,18 +24,30 @@
  */ 
 
 LXPattern[] patterns(GLucose glucose) {
-  return new LXPattern[] {
-
 <<<<<<< HEAD
-    new SineSphere(glucose),
-    new CubeCurl(glucose),
+  return new LXPattern[] {
+     
+     
 =======
->>>>>>> b8bb27489db7dc687bf150576e9d9439f1fa17a6
+  return new LXPattern[] {        
+>>>>>>> ebcc9e15d4fa53afa245ad8716b0094d9621273b
+
+    new SineSphere(glucose),
+    //new CubeCurl(glucose), 
+     
     // Slee
-    new Cathedrals(glucose),
+<<<<<<< HEAD
+    new Swarm(glucose),
+    //new Cathedrals(glucose),
     new MidiMusic(glucose),
     new Pulley(glucose),
-    new Swarm(glucose),
+=======
+    // new Cathedrals(glucose),
+     new Swarm(glucose),
+    new MidiMusic(glucose),
+    new Pulley(glucose),
+    
+>>>>>>> ebcc9e15d4fa53afa245ad8716b0094d9621273b
     new ViolinWave(glucose),
     new BouncyBalls(glucose),
     new SpaceTime(glucose),
@@ -44,11 +56,16 @@ LXPattern[] patterns(GLucose glucose) {
     new Blinders(glucose),
     new CrossSections(glucose),
     new Psychedelia(glucose),
+
+    new MultipleCubes(glucose),
     
     new Traktor(glucose).setEligible(false),
     new BassPod(glucose).setEligible(false),
     new CubeEQ(glucose).setEligible(false),
     new PianoKeyPattern(glucose).setEligible(false),
+
+	// AntonK
+	new AKPong(glucose),
 
     // DanH
     new Noise(glucose),
@@ -57,11 +74,38 @@ LXPattern[] patterns(GLucose glucose) {
     new Worms(glucose),
 
     // Alex G
+     new SineSphere(glucose),
+     //new CubeCurl(glucose), 
      
+     // Tim
+<<<<<<< HEAD
+=======
+    new TimMetronome(glucose),
+>>>>>>> ebcc9e15d4fa53afa245ad8716b0094d9621273b
+    new TimPlanes(glucose),
+    new TimPinwheels(glucose),
+    new TimRaindrops(glucose),
+    new TimCubes(glucose),
+<<<<<<< HEAD
 
-    // Shaheen
-    new HelixPattern(glucose).setEligible(false),
+=======
+    // new TimTrace(glucose),
+    new TimSpheres(glucose),
+
+    // Jackie
+    new JackieSquares(glucose),
+    new JackieLines(glucose),
+    new JackieDots(glucose),
+
+    // L8on
+    new L8onAutomata(glucose),
+    new L8onLife(glucose),
+    new L8onStripLife(glucose),
+
+    // Vincent
+    new VSTowers(glucose),
     
+>>>>>>> ebcc9e15d4fa53afa245ad8716b0094d9621273b
     // Toby
     new GlitchPlasma(glucose),
     new FireEffect(glucose).setEligible(false),
@@ -70,43 +114,52 @@ LXPattern[] patterns(GLucose glucose) {
     new SoundSpikes(glucose).setEligible(false),
     new FaceSync(glucose),
 
+    // Shaheen
+    new HelixPattern(glucose).setEligible(false),
+    
+    
     // Jack
     new Swim(glucose),
     new Balance(glucose),
+    
 
-    // Tim
-    new TimPlanes(glucose),
-    new TimPinwheels(glucose),
-    new TimRaindrops(glucose),
-    new TimCubes(glucose),
+<<<<<<< HEAD
+   
+    
     // new TimTrace(glucose),
     new TimSpheres(glucose),
 
+=======
+    
+>>>>>>> ebcc9e15d4fa53afa245ad8716b0094d9621273b
     // Ben
     // new Sandbox(glucose),
     new TowerParams(glucose),
     new DriveableCrossSections(glucose),
     new GranimTestPattern2(glucose),
     
+    // Shaheen
+    //new HelixPattern(glucose).setEligible(false),
+    
     //JR
-    new Gimbal(glucose),
+    //new Gimbal(glucose),
     
     // Sam
     new JazzRainbow(glucose),
     
     // Arjun
     new TelevisionStatic(glucose),
-    new AbstractPainting(glucose),
+    //new AbstractPainting(glucose),
     new Spirality(glucose),
 
     // Basic test patterns for reference, not art    
-    new TestCubePattern(glucose),
-    new TestTowerPattern(glucose),
-    new TestProjectionPattern(glucose),
-    new TestStripPattern(glucose),
-    new TestBassMapping(glucose),
-    new TestFloorMapping(glucose),
-    new TestSpeakerMapping(glucose),    
+    //new TestCubePattern(glucose),
+    //new TestTowerPattern(glucose),
+    //new TestProjectionPattern(glucose),
+    //new TestStripPattern(glucose),
+    //new TestBassMapping(glucose),
+    //new TestFloorMapping(glucose),
+    //new TestSpeakerMapping(glucose),    
     // new TestHuePattern(glucose),
     // new TestXPattern(glucose),
     // new TestYPattern(glucose),
